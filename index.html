@@ -248,6 +248,34 @@ body{font-family:'Karla',sans-serif;color:var(--text);display:flex;flex-directio
 .icon-opt{font-size:22px;padding:6px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:.15s;}
 .icon-opt.sel{border-color:var(--accent);}
 
+/* SOCIAL BUTTONS */
+.social-btn{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;font-family:'Karla',sans-serif;font-size:12px;font-weight:600;color:var(--text);transition:.15s;}
+.social-btn:active{transform:scale(.95);border-color:var(--accent);}
+.social-btn.configured{border-color:var(--accent3);background:rgba(168,230,180,.06);}
+
+/* BDAY CARDS */
+.bday-today-card{margin:10px 18px;background:linear-gradient(135deg,rgba(244,200,122,.15),rgba(126,184,247,.08));border:1px solid var(--accent);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px;}
+.bday-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.bday-card.today{border-color:var(--accent);background:rgba(244,200,122,.06);}
+.bday-days{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--accent2);min-width:40px;text-align:center;}
+.bday-days.today-lbl{color:var(--accent);font-size:14px;}
+.bday-info{flex:1;}
+.bday-name{font-size:13px;font-weight:700;}
+.bday-date{font-size:11px;color:var(--muted);margin-top:1px;}
+
+/* QUIZ AREA */
+.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;}
+.quiz-q{font-size:14px;font-weight:600;line-height:1.5;margin-bottom:14px;}
+.quiz-opts{display:flex;flex-direction:column;gap:7px;}
+.quiz-opt{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px 13px;font-size:13px;cursor:pointer;font-family:'Karla',sans-serif;text-align:left;color:var(--text);transition:.15s;}
+.quiz-opt:active{transform:scale(.98);}
+.quiz-opt.correct{background:rgba(168,230,180,.2);border-color:var(--accent3);color:var(--accent3);}
+.quiz-opt.wrong{background:rgba(240,112,112,.15);border-color:var(--danger);color:var(--danger);}
+.flashcard{background:linear-gradient(135deg,var(--card),var(--surface));border:1px solid var(--accent);border-radius:16px;padding:24px;text-align:center;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;}
+.flashcard-q{font-size:16px;font-weight:700;line-height:1.5;}
+.flashcard-a{font-size:14px;color:var(--accent3);margin-top:10px;line-height:1.6;display:none;}
+.flashcard-hint{font-size:11px;color:var(--muted);margin-top:12px;}
+
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 @keyframes popIn{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
@@ -460,6 +488,103 @@ body{font-family:'Karla',sans-serif;color:var(--text);display:flex;flex-directio
       <div class="item-list" id="planTasksList"></div>
       <button class="add-btn" style="margin-top:8px" onclick="openAddPlanTask()">＋ Ajouter une tâche planning</button>
     </div>
+
+    <div class="settings-section" style="padding-bottom:30px">
+      <div class="settings-section-title">🎂 Anniversaires</div>
+      <div class="item-list" id="bdaySettingsList"></div>
+      <button class="add-btn" style="margin-top:8px" onclick="openAddBirthday()">＋ Ajouter un anniversaire</button>
+    </div>
+
+    <div class="settings-section" style="padding-bottom:30px">
+      <div class="settings-section-title">📱 Liens réseaux sociaux</div>
+      <div class="settings-card">
+        <div class="settings-row" onclick="openSocialLinks()">
+          <div class="settings-row-icon">▶️</div>
+          <div class="settings-row-info"><div class="settings-row-label">YouTube & WhatsApp</div><div class="settings-row-sub" id="socialLinksSub">Non configuré</div></div>
+          <div class="settings-row-arrow">›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANNIVERSAIRES -->
+  <div class="page" id="page-birthdays">
+    <div class="page-header"><div class="page-h-title">🎂 Anniversaires</div><div class="page-h-sub">Tes proches</div></div>
+    <div id="bdayTodayWrap"></div>
+    <div class="section-title">À venir</div>
+    <div id="bdayList" style="padding:0 18px 24px;display:flex;flex-direction:column;gap:7px"></div>
+    <div style="padding:0 18px 12px">
+      <button class="add-btn" onclick="openAddBirthday()">＋ Ajouter un anniversaire</button>
+    </div>
+  </div>
+
+  <!-- AGENT IA -->
+  <div class="page" id="page-agent">
+    <div class="page-header"><div class="page-h-title">🤖 Agent IA</div><div class="page-h-sub">Ton assistant intelligent</div></div>
+    <div style="padding:12px 18px;display:flex;flex-direction:column;gap:10px">
+
+      <!-- Réseaux sociaux -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px">
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;margin-bottom:12px">📱 Mes réseaux</div>
+        <div style="display:flex;gap:10px;margin-bottom:12px">
+          <button class="social-btn" id="btn-youtube" onclick="openSocial('youtube')">
+            <span style="font-size:24px">▶️</span><span>YouTube</span>
+          </button>
+          <button class="social-btn" id="btn-whatsapp" onclick="openSocial('whatsapp')">
+            <span style="font-size:24px">💬</span><span>WhatsApp</span>
+          </button>
+        </div>
+        <button class="add-btn" onclick="openSocialLinks()" style="font-size:12px;padding:9px">⚙️ Configurer mes liens</button>
+      </div>
+
+      <!-- Générateur de posts -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px">
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;margin-bottom:10px">✍️ Générateur de posts</div>
+        <div class="form-group" style="margin-bottom:8px">
+          <select class="form-select" id="postNetwork">
+            <option value="youtube">YouTube (description)</option>
+            <option value="whatsapp">WhatsApp (message)</option>
+          </select>
+        </div>
+        <textarea class="form-textarea" id="postTopic" placeholder="Sujet du post... Ex: Partager mon avancement en Python" style="margin-bottom:8px"></textarea>
+        <button class="btn btn-primary" onclick="generatePost()" id="postBtn">✨ Générer</button>
+        <div id="postResult" style="display:none;margin-top:12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:13px;line-height:1.7;white-space:pre-wrap"></div>
+        <div id="postActions" style="display:none;margin-top:8px;display:none;gap:8px">
+          <button class="btn btn-ghost" style="flex:1;font-size:12px;padding:9px" onclick="copyPost()">📋 Copier</button>
+          <button class="btn btn-ghost" style="flex:1;font-size:12px;padding:9px" onclick="sharePost()">↗️ Partager</button>
+        </div>
+      </div>
+
+      <!-- Résumeur d'articles -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px">
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;margin-bottom:10px">📰 Résumer un article</div>
+        <textarea class="form-textarea" id="articleText" placeholder="Colle le texte de l'article ici..." style="margin-bottom:8px;height:90px"></textarea>
+        <button class="btn btn-primary" onclick="summarizeArticle()" id="sumBtn">📖 Résumer</button>
+        <div id="sumResult" style="display:none;margin-top:12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:13px;line-height:1.7"></div>
+      </div>
+
+      <!-- Flashcards / Quiz -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:24px">
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;margin-bottom:10px">🎯 Quiz & Flashcards</div>
+        <div class="form-group" style="margin-bottom:8px">
+          <select class="form-select" id="quizSubject">
+            <option value="Code de la route">🚗 Code de la route</option>
+            <option value="Anglais">🇬🇧 Anglais</option>
+            <option value="Excel">📊 Excel</option>
+            <option value="HTML/CSS">🌐 HTML/CSS</option>
+            <option value="Python">🐍 Python</option>
+            <option value="Linux">🖥️ Linux</option>
+            <option value="Cybersécurité">🔐 Cybersécurité</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <button class="btn btn-primary" style="flex:1;font-size:13px" onclick="startQuiz()">🎯 Quiz</button>
+          <button class="btn btn-ghost" style="flex:1;font-size:13px" onclick="startFlashcard()">🃏 Flashcard</button>
+        </div>
+        <div id="quizArea" style="display:none"></div>
+      </div>
+
+    </div>
   </div>
 
 </div>
@@ -467,8 +592,8 @@ body{font-family:'Karla',sans-serif;color:var(--text);display:flex;flex-directio
 <div class="bottom-nav">
   <button class="nav-btn active" id="nav-home" onclick="showPage('home')"><span class="nav-icon">🏠</span>Accueil</button>
   <button class="nav-btn" id="nav-planning" onclick="showPage('planning')"><span class="nav-icon">📅</span>Planning</button>
-  <button class="nav-btn" id="nav-chat" onclick="showPage('chat')"><span class="nav-icon">💬</span>Assistant</button>
-  <button class="nav-btn" id="nav-rappels" onclick="showPage('rappels')"><span class="nav-icon">🔔</span>Rappels<span class="nav-badge" id="remindBadge" style="display:none">!</span></button>
+  <button class="nav-btn" id="nav-agent" onclick="showPage('agent')"><span class="nav-icon">🤖</span>Agent</button>
+  <button class="nav-btn" id="nav-birthdays" onclick="showPage('birthdays')"><span class="nav-icon">🎂</span>Anniv<span class="nav-badge" id="bdayBadge" style="display:none">!</span></button>
   <button class="nav-btn" id="nav-settings" onclick="showPage('settings')"><span class="nav-icon">⚙️</span>Réglages</button>
 </div>
 
@@ -725,6 +850,8 @@ function showPage(name){
   document.getElementById('nav-'+name).classList.add('active');
   if(name==='rappels')renderRemindList();
   if(name==='settings')renderAllSettings();
+  if(name==='birthdays')renderBirthdays();
+  if(name==='agent')updateSocialBtns();
 }
 
 // ─── PLANNING ────────────────────────────────────────────
@@ -874,6 +1001,21 @@ function renderAllSettings(){
       <button class="icon-btn" onclick="openEditPlanTask('${t.id}')">✏️</button>
       <button class="icon-btn del" onclick="deletePlanTask('${t.id}')">🗑️</button>
     </div></div>`).join('')||'<div style="color:var(--muted);font-size:13px;padding:6px 0">Aucune tâche planning</div>';
+
+  // Birthdays in settings
+  const bdsl=document.getElementById('bdaySettingsList');
+  const months=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  if(bdsl)bdsl.innerHTML=(S.birthdays||[]).map(b=>`<div class="item-card">
+    <div class="item-card-info"><div class="item-card-title">${b.icon||'👤'} ${b.name}</div><div class="item-card-sub">${b.day} ${months[b.month-1]}${b.year?' '+b.year:''}</div></div>
+    <div class="item-card-actions">
+      <button class="icon-btn" onclick="openEditBirthday('${b.id}')">✏️</button>
+      <button class="icon-btn del" onclick="deleteBirthday('${b.id}')">🗑️</button>
+    </div></div>`).join('')||'<div style="color:var(--muted);font-size:13px;padding:6px 0">Aucun anniversaire</div>';
+
+  // Social links
+  const sls=document.getElementById('socialLinksSub');
+  const hasYt=S.socialLinks?.youtube,hasWa=S.socialLinks?.whatsapp;
+  if(sls)sls.textContent=hasYt||hasWa?[hasYt?'YouTube ✅':'',hasWa?'WhatsApp ✅':''].filter(Boolean).join(' · '):'Non configuré';
 }
 
 // ─── PROFILE ─────────────────────────────────────────────
@@ -1025,6 +1167,239 @@ function showTyping(){
 }
 function removeTyping(){const e=document.getElementById('typ');if(e)e.remove();}
 
+// ─── BIRTHDAYS ───────────────────────────────────────────
+function renderBirthdays(){
+  const now=new Date();
+  const nowDay=now.getDate(),nowMonth=now.getMonth()+1;
+
+  // Check today's birthdays for badge
+  const todayBdays=S.birthdays?S.birthdays.filter(b=>b.day===nowDay&&b.month===nowMonth):[];
+  const badge=document.getElementById('bdayBadge');
+  if(badge){badge.style.display=todayBdays.length?'flex':'none';}
+
+  // Fire birthday notifications
+  if(S.birthdays){
+    S.birthdays.forEach(b=>{
+      const key=now.toDateString()+'-bday-'+b.id;
+      if(b.day===nowDay&&b.month===nowMonth&&!S.firedReminders[key]){
+        S.firedReminders[key]=true;save();
+        showNotifOverlay('🎂','Anniversaire !','C\'est l\'anniversaire de '+b.name+' aujourd\'hui ! 🎉');
+        addLog('🎂 Anniversaire de '+b.name,'Aujourd\'hui !','alert');
+      }
+    });
+  }
+
+  const tw=document.getElementById('bdayTodayWrap');
+  const bl=document.getElementById('bdayList');
+  if(!tw||!bl)return;
+
+  if(todayBdays.length){
+    tw.innerHTML=todayBdays.map(b=>`<div class="bday-today-card">
+      <span style="font-size:40px">🎂</span>
+      <div style="flex:1"><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--accent)">${b.name}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">Anniversaire aujourd'hui !</div>
+      <button class="btn btn-primary" style="margin-top:10px;padding:9px;font-size:12px" onclick="generateBdayMsg('${b.id}')">🤖 Générer un message</button></div>
+    </div>`).join('');
+  } else tw.innerHTML='';
+
+  if(!S.birthdays||!S.birthdays.length){bl.innerHTML='<div style="text-align:center;color:var(--muted);font-size:13px;padding:20px 0">Aucun anniversaire enregistré</div>';return;}
+
+  const months=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  const sorted=[...S.birthdays].map(b=>{
+    let daysLeft;
+    const bdayThisYear=new Date(now.getFullYear(),b.month-1,b.day);
+    if(bdayThisYear<now) bdayThisYear.setFullYear(now.getFullYear()+1);
+    daysLeft=Math.ceil((bdayThisYear-now)/(1000*60*60*24));
+    return {...b,daysLeft};
+  }).sort((a,b)=>a.daysLeft-b.daysLeft);
+
+  bl.innerHTML=sorted.map(b=>`<div class="bday-card ${b.daysLeft===0?'today':''}">
+    <div class="bday-days ${b.daysLeft===0?'today-lbl':''}">${b.daysLeft===0?'🎉':b.daysLeft+'j'}</div>
+    <div class="bday-info">
+      <div class="bday-name">${b.icon||'👤'} ${b.name}</div>
+      <div class="bday-date">${b.day} ${months[b.month-1]}${b.year?' ('+b.year+')':''}</div>
+    </div>
+    <div style="display:flex;gap:5px">
+      <button class="icon-btn" onclick="openEditBirthday('${b.id}')">✏️</button>
+      <button class="icon-btn del" onclick="deleteBirthday('${b.id}')">🗑️</button>
+    </div>
+  </div>`).join('');
+}
+
+function bdayForm(b=null){
+  return `
+  <div class="form-group"><label class="form-label">Icône</label><input class="form-input" id="bdIcon" value="${b?b.icon||'👤':'👤'}" maxlength="4"></div>
+  <div class="form-group"><label class="form-label">Prénom / Nom</label><input class="form-input" id="bdName" value="${b?b.name:''}" placeholder="Ex: Maman, Marc..."></div>
+  <div class="form-group"><label class="form-label">Date d'anniversaire</label>
+    <div class="form-row">
+      <input class="form-input" id="bdDay" type="number" min="1" max="31" value="${b?b.day:''}" placeholder="Jour">
+      <input class="form-input" id="bdMonth" type="number" min="1" max="12" value="${b?b.month:''}" placeholder="Mois">
+    </div></div>
+  <div class="form-group"><label class="form-label">Année de naissance (optionnel)</label>
+    <input class="form-input" id="bdYear" type="number" value="${b&&b.year?b.year:''}" placeholder="Ex: 1990"></div>`;
+}
+function openAddBirthday(){openModal('🎂 Nouvel anniversaire',bdayForm()+`<button class="btn btn-primary" onclick="saveBirthday(null)">＋ Ajouter</button>`);}
+function openEditBirthday(id){const b=S.birthdays.find(x=>x.id===id);openModal('✏️ Modifier',bdayForm(b)+`<button class="btn btn-primary" onclick="saveBirthday('${id}')">💾 Sauvegarder</button><div style="margin-top:8px"><button class="btn btn-danger" onclick="deleteBirthday('${id}')">🗑️ Supprimer</button></div>`);}
+function saveBirthday(id){
+  const obj={id:id||uid(),icon:document.getElementById('bdIcon').value||'👤',name:document.getElementById('bdName').value.trim()||'Ami(e)',day:parseInt(document.getElementById('bdDay').value)||1,month:parseInt(document.getElementById('bdMonth').value)||1,year:document.getElementById('bdYear').value?parseInt(document.getElementById('bdYear').value):null};
+  if(!S.birthdays)S.birthdays=[];
+  if(id){const i=S.birthdays.findIndex(x=>x.id===id);if(i>=0)S.birthdays[i]=obj;}else S.birthdays.push(obj);
+  save();renderBirthdays();closeModal();showToast('🎂','Anniversaire sauvegardé !');
+}
+function deleteBirthday(id){if(confirm('Supprimer ?')){S.birthdays=S.birthdays.filter(x=>x.id!==id);save();renderBirthdays();closeModal();}}
+
+async function generateBdayMsg(id){
+  const b=S.birthdays.find(x=>x.id===id);if(!b)return;
+  showToast('🤖','Génération en cours...');
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:`Génère un message d'anniversaire chaleureux et sincère en français pour ${b.name}. Court, 2-3 phrases max, avec émojis.`}]})});
+    const data=await resp.json();
+    const msg=data.content?.map(i=>i.text||'').join('')||'Joyeux anniversaire ! 🎂🎉';
+    openModal('🎂 Message pour '+b.name,`<div style="background:var(--surface);border:1px solid var(--accent);border-radius:13px;padding:16px;font-size:14px;line-height:1.7;margin-bottom:14px">${msg}</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" style="flex:1" onclick="navigator.clipboard.writeText(document.querySelector('#modal .modal-body div').textContent);showToast('📋','Copié !')">📋 Copier</button>
+        <button class="btn btn-primary" style="flex:1" onclick="window.open('https://wa.me/?text='+encodeURIComponent(document.querySelector('#modal .modal-body div').textContent))">💬 WhatsApp</button>
+      </div>`);
+  }catch(e){showToast('❌','Erreur, réessaie');}
+}
+
+// ─── SOCIAL LINKS ─────────────────────────────────────────
+function openSocialLinks(){
+  const yt=S.socialLinks?.youtube||'';
+  const wa=S.socialLinks?.whatsapp||'';
+  openModal('📱 Mes liens réseaux',`
+    <div class="form-group"><label class="form-label">▶️ Lien YouTube (chaîne)</label><input class="form-input" id="slYt" value="${yt}" placeholder="https://youtube.com/@ta-chaine"></div>
+    <div class="form-group"><label class="form-label">💬 Numéro WhatsApp</label><input class="form-input" id="slWa" value="${wa}" placeholder="Ex: +33612345678"></div>
+    <button class="btn btn-primary" onclick="saveSocialLinks()">💾 Sauvegarder</button>`);
+}
+function saveSocialLinks(){
+  if(!S.socialLinks)S.socialLinks={};
+  S.socialLinks.youtube=document.getElementById('slYt').value.trim();
+  S.socialLinks.whatsapp=document.getElementById('slWa').value.trim();
+  save();updateSocialBtns();closeModal();showToast('✅','Liens sauvegardés !');
+}
+function updateSocialBtns(){
+  const ytBtn=document.getElementById('btn-youtube');
+  const waBtn=document.getElementById('btn-whatsapp');
+  if(ytBtn)ytBtn.className='social-btn'+(S.socialLinks?.youtube?' configured':'');
+  if(waBtn)waBtn.className='social-btn'+(S.socialLinks?.whatsapp?' configured':'');
+}
+function openSocial(net){
+  if(net==='youtube'){
+    const url=S.socialLinks?.youtube||'https://youtube.com';
+    window.open(url,'_blank');
+  } else if(net==='whatsapp'){
+    const num=S.socialLinks?.whatsapp||'';
+    window.open(num?`https://wa.me/${num.replace(/\D/g,'')}`:'https://web.whatsapp.com','_blank');
+  }
+}
+
+// ─── GENERATE POST ────────────────────────────────────────
+async function generatePost(){
+  const network=document.getElementById('postNetwork').value;
+  const topic=document.getElementById('postTopic').value.trim();
+  if(!topic){showToast('⚠️','Entre un sujet !');return;}
+  document.getElementById('postBtn').textContent='⏳ Génération...';
+  document.getElementById('postBtn').disabled=true;
+  const prompts={youtube:`Génère une description YouTube professionnelle et engageante en français pour une vidéo sur : "${topic}". Include des hashtags pertinents. Max 150 mots.`,whatsapp:`Génère un message WhatsApp court et sympa en français sur : "${topic}". Naturel, avec émojis. Max 3 phrases.`};
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompts[network]}]})});
+    const data=await resp.json();
+    const result=data.content?.map(i=>i.text||'').join('')||'Erreur de génération';
+    const el=document.getElementById('postResult');
+    el.textContent=result;el.style.display='block';
+    document.getElementById('postActions').style.display='flex';
+  }catch(e){showToast('❌','Erreur, réessaie');}
+  document.getElementById('postBtn').textContent='✨ Générer';
+  document.getElementById('postBtn').disabled=false;
+}
+function copyPost(){
+  const txt=document.getElementById('postResult').textContent;
+  navigator.clipboard.writeText(txt).then(()=>showToast('📋','Copié !'));
+}
+function sharePost(){
+  const txt=document.getElementById('postResult').textContent;
+  if(navigator.share)navigator.share({text:txt});
+  else window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');
+}
+
+// ─── SUMMARIZE ARTICLE ────────────────────────────────────
+async function summarizeArticle(){
+  const text=document.getElementById('articleText').value.trim();
+  if(!text){showToast('⚠️','Colle un article !');return;}
+  document.getElementById('sumBtn').textContent='⏳ Résumé...';
+  document.getElementById('sumBtn').disabled=true;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:`Résume cet article en français en 5 points clés avec des émojis bullet points :\n\n${text.slice(0,3000)}`}]})});
+    const data=await resp.json();
+    const result=data.content?.map(i=>i.text||'').join('')||'Erreur';
+    const el=document.getElementById('sumResult');
+    el.innerHTML=result.replace(/\n/g,'<br>');el.style.display='block';
+  }catch(e){showToast('❌','Erreur, réessaie');}
+  document.getElementById('sumBtn').textContent='📖 Résumer';
+  document.getElementById('sumBtn').disabled=false;
+}
+
+// ─── QUIZ & FLASHCARDS ────────────────────────────────────
+let currentQuiz=null;
+
+async function startQuiz(){
+  const subject=document.getElementById('quizSubject').value;
+  const area=document.getElementById('quizArea');
+  area.style.display='block';
+  area.innerHTML=`<div class="quiz-card"><div class="quiz-q">⏳ Génération de la question...</div></div>`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:`Génère une question de quiz sur "${subject}" avec 4 réponses possibles. Réponds UNIQUEMENT en JSON valide sans markdown : {"question":"...","options":["A","B","C","D"],"correct":0}`}]})});
+    const data=await resp.json();
+    let raw=data.content?.map(i=>i.text||'').join('')||'{}';
+    raw=raw.replace(/```json|```/g,'').trim();
+    const q=JSON.parse(raw);
+    currentQuiz=q;
+    area.innerHTML=`<div class="quiz-card">
+      <div class="quiz-q">${q.question}</div>
+      <div class="quiz-opts">${q.options.map((o,i)=>`<button class="quiz-opt" onclick="checkQuiz(${i},this)">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>
+    </div>`;
+  }catch(e){area.innerHTML=`<div class="quiz-card"><div class="quiz-q">❌ Erreur, réessaie</div></div>`;}
+}
+
+function checkQuiz(idx,btn){
+  if(!currentQuiz)return;
+  document.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
+  if(idx===currentQuiz.correct){btn.classList.add('correct');showToast('🎉','Bonne réponse !');}
+  else{btn.classList.add('wrong');document.querySelectorAll('.quiz-opt')[currentQuiz.correct].classList.add('correct');showToast('❌','Mauvaise réponse');}
+  setTimeout(()=>{
+    const area=document.getElementById('quizArea');
+    if(area)area.innerHTML+=`<button class="btn btn-primary" style="margin-top:10px" onclick="startQuiz()">➡️ Question suivante</button>`;
+  },500);
+}
+
+async function startFlashcard(){
+  const subject=document.getElementById('quizSubject').value;
+  const area=document.getElementById('quizArea');
+  area.style.display='block';
+  area.innerHTML=`<div class="quiz-card"><div class="quiz-q">⏳ Génération...</div></div>`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:`Génère une flashcard de révision sur "${subject}". Réponds UNIQUEMENT en JSON valide sans markdown : {"question":"...","answer":"..."}`}]})});
+    const data=await resp.json();
+    let raw=data.content?.map(i=>i.text||'').join('')||'{}';
+    raw=raw.replace(/```json|```/g,'').trim();
+    const fc=JSON.parse(raw);
+    area.innerHTML=`<div class="flashcard" onclick="flipFlashcard(this)" id="fcCard">
+      <div class="flashcard-q">${fc.question}</div>
+      <div class="flashcard-a" id="fcAnswer">${fc.answer}</div>
+      <div class="flashcard-hint">👆 Appuie pour voir la réponse</div>
+    </div>
+    <button class="btn btn-ghost" style="margin-top:8px" onclick="startFlashcard()">🔄 Nouvelle carte</button>`;
+  }catch(e){area.innerHTML=`<div class="quiz-card"><div class="quiz-q">❌ Erreur, réessaie</div></div>`;}
+}
+
+function flipFlashcard(el){
+  const ans=document.getElementById('fcAnswer');
+  const hint=el.querySelector('.flashcard-hint');
+  if(ans.style.display==='none'||!ans.style.display){ans.style.display='block';if(hint)hint.style.display='none';}
+  else{ans.style.display='none';if(hint)hint.style.display='block';}
+}
+
 // ─── ONBOARDING ──────────────────────────────────────────
 function obShowStep(id){
   document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
@@ -1077,6 +1452,10 @@ if(!S.onboarded){
   document.getElementById('onboarding').classList.add('hidden');
   requestNotif();
 }
+if(!S.birthdays)S.birthdays=[];
+if(!S.socialLinks)S.socialLinks={};
+renderBirthdays();
+updateSocialBtns();
 renderMedGrid();renderTaskRow();renderLogs();
 renderDays(WEEK1,'planpage-week1');
 renderDays(WEEKLY,'planpage-weekly');
