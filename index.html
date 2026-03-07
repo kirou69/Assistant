@@ -254,9 +254,75 @@ body{font-family:'Karla',sans-serif;color:var(--text);display:flex;flex-directio
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
 @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ONBOARDING */
+#onboarding{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;overflow-y:auto;}
+#onboarding.hidden{display:none;}
+.ob-step{display:none;flex-direction:column;align-items:center;width:100%;max-width:360px;animation:fadeUp .4s ease;}
+.ob-step.active{display:flex;}
+.ob-emoji{font-size:72px;margin-bottom:16px;}
+.ob-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;text-align:center;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.ob-sub{font-size:14px;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:28px;}
+.ob-form{width:100%;display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
+.ob-dots{display:flex;gap:7px;margin-bottom:24px;}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:.3s;}
+.ob-dot.active{background:var(--accent);width:20px;border-radius:4px;}
+.ob-skip{background:none;border:none;color:var(--muted);font-family:'Karla',sans-serif;font-size:13px;cursor:pointer;padding:8px;margin-top:4px;text-decoration:underline;}
 </style>
 </head>
 <body>
+
+<!-- ONBOARDING -->
+<div id="onboarding">
+  <div class="ob-step active" id="ob-step-1">
+    <div class="ob-dots"><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <div class="ob-emoji">👋</div>
+    <div class="ob-title">Bienvenue !</div>
+    <div class="ob-sub">Ton assistant personnel pour gérer tes médicaments, révisions et rappels automatiques.</div>
+    <div class="ob-form">
+      <div class="form-group" style="width:100%;margin:0">
+        <label class="form-label">Comment tu t'appelles ?</label>
+        <input class="form-input" id="ob-name" placeholder="Entre ton prénom...">
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="obNext1()">Continuer →</button>
+  </div>
+
+  <div class="ob-step" id="ob-step-2">
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot active"></div><div class="ob-dot"></div></div>
+    <div class="ob-emoji">💊</div>
+    <div class="ob-title">Médicaments</div>
+    <div class="ob-sub">Est-ce que tu prends des médicaments quotidiens à des heures fixes ?</div>
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;margin-bottom:20px">
+      <button class="btn btn-primary" onclick="obGoMeds()">✅ Oui, configurer</button>
+      <button class="btn btn-ghost" onclick="obSkipMeds()">Non, passer</button>
+    </div>
+  </div>
+
+  <div class="ob-step" id="ob-step-2b">
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot active"></div><div class="ob-dot"></div></div>
+    <div class="ob-emoji">💊</div>
+    <div class="ob-title">Mon médicament</div>
+    <div class="ob-sub">Configure ton médicament (tu peux en ajouter d'autres dans Réglages)</div>
+    <div class="ob-form">
+      <div class="form-group" style="margin:0"><label class="form-label">Nom</label><input class="form-input" id="ob-med-name" placeholder="Ex: Vitamine D"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Label</label><input class="form-input" id="ob-med-label" placeholder="Ex: Midi, Soir avant repas..."></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Heure du rappel</label>
+        <div class="form-row"><input class="form-input" id="ob-med-h" type="number" min="0" max="23" value="12" placeholder="H"><input class="form-input" id="ob-med-m" type="number" min="0" max="59" value="0" placeholder="Min"></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-bottom:10px" onclick="obSaveMed()">Sauvegarder →</button>
+    <button class="ob-skip" onclick="obSkipMeds()">Passer cette étape</button>
+  </div>
+
+  <div class="ob-step" id="ob-step-3">
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot active"></div></div>
+    <div class="ob-emoji">🚀</div>
+    <div class="ob-title" id="ob3-title">C'est parti !</div>
+    <div class="ob-sub">Ton assistant est prêt. Tu peux tout personnaliser dans l'onglet Réglages ⚙️</div>
+    <button class="btn btn-primary" style="width:100%" onclick="obFinish()">🎉 Commencer !</button>
+  </div>
+</div>
 
 <div id="notifOverlay">
   <div class="notif-box">
@@ -959,8 +1025,58 @@ function showTyping(){
 }
 function removeTyping(){const e=document.getElementById('typ');if(e)e.remove();}
 
+// ─── ONBOARDING ──────────────────────────────────────────
+function obShowStep(id){
+  document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function obNext1(){
+  const name=document.getElementById('ob-name').value.trim();
+  if(!name){document.getElementById('ob-name').focus();showToast('⚠️','Entre ton prénom !');return;}
+  S.profile.name=name;
+  // Clear default meds for new user
+  S.meds=[];
+  save();
+  obShowStep('ob-step-2');
+}
+function obGoMeds(){ obShowStep('ob-step-2b'); }
+function obSkipMeds(){ obShowStep('ob-step-3'); updateOb3(); }
+function obSaveMed(){
+  const name=document.getElementById('ob-med-name').value.trim()||'Médicament';
+  const label=document.getElementById('ob-med-label').value.trim()||'';
+  const h=parseInt(document.getElementById('ob-med-h').value)||12;
+  const m=parseInt(document.getElementById('ob-med-m').value)||0;
+  S.meds.push({id:uid(),icon:'💊',name,label,h,m,active:true});
+  save();
+  obShowStep('ob-step-3');
+  updateOb3();
+}
+function updateOb3(){
+  const n=S.profile.name||'toi';
+  document.getElementById('ob3-title').textContent='Bienvenue '+n+' ! 🎉';
+  document.getElementById('ob3-sub').textContent='Ton assistant est prêt. Tu peux tout personnaliser dans l\'onglet Réglages ⚙️';
+}
+function obFinish(){
+  S.onboarded=true;
+  save();
+  document.getElementById('onboarding').classList.add('hidden');
+  renderAllSettings();renderMedGrid();renderTaskRow();
+  // Add default reminders if none
+  if(!S.reminders||!S.reminders.length) S.reminders=JSON.parse(JSON.stringify(DEFAULTS.reminders));
+  save();
+  showToast('🎉','Bienvenue '+S.profile.name+' !');
+  requestNotif();
+}
+
 // ─── INIT ────────────────────────────────────────────────
 load();
+// Show onboarding only for new users
+if(!S.onboarded){
+  document.getElementById('onboarding').style.display='flex';
+} else {
+  document.getElementById('onboarding').classList.add('hidden');
+  requestNotif();
+}
 renderMedGrid();renderTaskRow();renderLogs();
 renderDays(WEEK1,'planpage-week1');
 renderDays(WEEKLY,'planpage-weekly');
